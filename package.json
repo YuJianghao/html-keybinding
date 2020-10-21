@@ -1,12 +1,15 @@
 {
-  "name": "keybinding.js",
-  "version": "0.1.0",
-  "description": "A keybinding system for js",
+  "name": "@winwin/keybinding.js",
+  "version": "0.1.0-0",
+  "description": "A simple keybinding system for html",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": "git@github.com:YuJianghao/keybinding.js.git",
   "author": "winwin_2011 <yjh2011@live.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "gulp"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
