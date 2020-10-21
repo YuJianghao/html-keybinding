@@ -121,7 +121,7 @@ export default defineComponent({
       kbd.dispose()
     });
   },
-  // or use Parameters api
+  // or use option api
   mounted(){
     this.$kbd.mount(document.getElementById("app"));
     // then rigister keybindings any where
