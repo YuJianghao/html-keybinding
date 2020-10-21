@@ -175,7 +175,6 @@ unregister all keybinding
 
 ```ts
 dispose(): void;
-```key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
 ```
 
 - Describe: unregister all keybinding
