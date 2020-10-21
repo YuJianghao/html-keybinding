@@ -134,24 +134,49 @@ export default defineComponent({
 
 ## Doc
 
-```ts
-// mount keybinding.js to a root HTMLElement
-mount(element: HTMLElement | null | undefined): void;
+### mount
 
-// register keybinding
+mount keybinding.js to a root HTMLElement
+
+```ts
+mount(element: HTMLElement | null | undefined): void;
+```
+
+### register
+
+register keybinding
+
+```ts
 register(element: HTMLElement | null | undefined, id: string, key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
 register(id: string, key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
-// element : HTMLElement which emit keydown event, default root HTMLElement when mount
-//      id : keybinding id
-//     key : Key code or a function, if function return ture, then run exec
-//    exec : keybinding callback
+```
 
-// unregister keybinding
+**element** : HTMLElement which emit keydown event, default root HTMLElement when mount
+
+**id** : keybinding id
+
+**key** : Key code or a function, if function return ture, then run exec
+
+**exec** : keybinding callback
+
+### unregister
+
+unregister keybinding
+
+```ts
 unregister(element: HTMLElement | null | undefined, id: string): void;
 unregister(id: string): void;
-// element : HTMLElement which emit keydown event, default root HTMLElement when mount
-//      id : keybinding id
+```
 
-// unregister all keybinding
+**element** : HTMLElement which emit keydown event, default root HTMLElement when mount
+
+**id** : keybinding id
+
+### dispose
+
+unregister all keybinding
+
+```ts
 dispose(): void;
+```key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
 ```
