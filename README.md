@@ -2,7 +2,8 @@
 
 A simple keybinding system for html
 
-> Notes for early version: API changes daily!!
+> Notes for early versions:
+> API may change daily!!
 
 ## Installation
 
@@ -120,7 +121,7 @@ export default defineComponent({
       kbd.dispose()
     });
   },
-  // or use options api
+  // or use Parameters api
   mounted(){
     this.$kbd.mount(document.getElementById("app"));
     // then rigister keybindings any where
@@ -136,41 +137,37 @@ export default defineComponent({
 
 ### mount
 
-mount keybinding.js to a root HTMLElement
-
 ```ts
 mount(element: HTMLElement | null | undefined): void;
 ```
 
-### register
+- Describe: mount keybinding.js to a root HTMLElement
 
-register keybinding
+### register
 
 ```ts
 register(element: HTMLElement | null | undefined, id: string, key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
 register(id: string, key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
 ```
 
-**element** : HTMLElement which emit keydown event, default root HTMLElement when mount
-
-**id** : keybinding id
-
-**key** : Key code or a function, if function return ture, then run exec
-
-**exec** : keybinding callback
+- Describe: register keybinding
+- Parameters:
+  - **element** : HTMLElement which emit keydown event, default root HTMLElement when mount
+  - **id** : keybinding id
+  - **key** : Key code or a function, if function return ture, then run exec
+  - **exec** : keybinding callback
 
 ### unregister
-
-unregister keybinding
 
 ```ts
 unregister(element: HTMLElement | null | undefined, id: string): void;
 unregister(id: string): void;
 ```
 
-**element** : HTMLElement which emit keydown event, default root HTMLElement when mount
-
-**id** : keybinding id
+- Describe: unregister keybinding
+- Parameters:
+  - **element** : HTMLElement which emit keydown event, default root HTMLElement when mount
+  - **id** : keybinding id
 
 ### dispose
 
@@ -180,3 +177,5 @@ unregister all keybinding
 dispose(): void;
 ```key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
 ```
+
+- Describe: unregister all keybinding
