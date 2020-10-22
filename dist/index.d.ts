@@ -1,56 +1,30 @@
+declare class Logger {
+    private _debug;
+    constructor(_debug?: boolean);
+    log(...args: any): void;
+    warn(...args: any): void;
+    error(...args: any): void;
+    debug(debug?: boolean): void;
+}
 export interface IKeyBindingItem {
-    key: number | ((e: KeyboardEvent) => boolean);
+    key: number;
     exec: (e: KeyboardEvent) => void;
 }
-export declare class KeyBindingListener {
-    private elememt;
-    private map;
-    private _handler;
-    constructor(elememt: HTMLElement);
-    get empty(): boolean;
-    register(id: string, kbi: IKeyBindingItem): void;
-    unregister(id: string): void;
-    dispose(): void;
-}
 export declare class KeyBinding {
-    private listeners;
-    private _root;
-    constructor(debug?: boolean);
-    /**
-     * mount kbd to a dom element as default element
-     * @param element default element
-     */
-    mount(element: HTMLElement | null | undefined): void;
-    /**
-     * Register a keybinding to element
-     * @param element dom element that should listen to
-     * @param id keybinding id string, uniq
-     * @param key KeyMod and KeyCode
-     * @param exec callback function
-     */
-    register(element: HTMLElement | null | undefined, id: string, key: number | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
-    /**
-     * Register a keybinding to default root element
-     * @param id keybinding id string, uniq
-     * @param key KeyMod and KeyCode
-     * @param exec callback function
-     */
-    register(id: string, key: number | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
-    /**
-     * Register a keybinding from element
-     * @param element dom element that should unregister with
-     * @param id keybinding id string, uniq
-     */
-    unregister(element: HTMLElement | null | undefined, id: string): void;
-    /**
-     * Unregister a keybinding from default root element
-     * @param id keybinding id string, uniq
-     */
+    name: string;
+    debug: boolean;
+    static map: Map<string, KeyBinding>;
+    static __debug: boolean;
+    static _logger: Logger;
+    private _keybindings;
+    handler: (e: KeyboardEvent) => Promise<void>;
+    private _logger;
+    constructor(name: string, debug?: boolean);
+    private _handler;
+    register(id: string, key: number, exec: (e: KeyboardEvent) => void): void;
     unregister(id: string): void;
-    /**
-     * Unregister all keybindings and remove all event listeners
-     */
     dispose(): void;
-    _addListener(element: HTMLElement): KeyBindingListener;
-    _removeListener(element: HTMLElement): void;
+    static debug(debug?: boolean): void;
+    static dispose(): void;
 }
+export {};
