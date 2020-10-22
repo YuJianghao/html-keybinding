@@ -38,6 +38,7 @@ export class KeyBinding {
   private static _debug = false;
   private static _logger = new Logger(KeyBinding._debug);
   private _keybindings: Map<string, IKeyBindingItem> = new Map();
+  private _ids: string[] = [];
   private _stackMap: Map<string, Stack<IKeyBindingItem>> = new Map();
   /**
    * Handler used to handle keyboard event
@@ -74,23 +75,26 @@ export class KeyBinding {
     }
     this._logger.log(`Keydown detected at ${this.name}`);
     const se = new StandardKeyboardEvent(e);
-    this._keybindings.forEach((keybinding, key) => {
-      if (se.equals(keybinding.key)) {
-        this._logger.log(`Fire keybinding ${this.name}:${key}`);
-        keybinding.exec(e);
+    const firedKeys: number[] = [];
+    for (const i in this._ids) {
+      const id = this._ids[this._ids.length - 1 - parseInt(i, 10)];
+      const kbd = this._keybindings.get(id);
+      if (firedKeys.includes(kbd.key)) break;
+      if (se.equals(kbd.key)) {
+        firedKeys.push(kbd.key);
+        this._logger.log(`Fire keybinding ${this.name}:${id}`);
+        kbd.exec(e);
       }
-    });
+    }
   }
 
-  private _override(id: string, keybinding: IKeyBindingItem) {
+  private _halt(id: string) {
     if (!this._stackMap.has(id))
       this._stackMap.set(id, new Stack<IKeyBindingItem>());
     const kbi = this._keybindings.get(id);
     this._stackMap.get(id).push(kbi);
     this._keybindings.delete(id);
-    this._logger.log(
-      `Override ${this.name}:${id}:${kbi.key} with ${this.name}:${keybinding.id}:${keybinding.key}`
-    );
+    this._logger.log(`Halt ${this.name}:${id}:${kbi.key}`);
   }
 
   private _resume(id: string) {
@@ -117,9 +121,10 @@ export class KeyBinding {
       return;
     }
     if (this._keybindings.has(id)) {
-      this._override(id, { id, key, exec });
+      this._halt(id);
     }
     this._keybindings.set(id, { id, key, exec });
+    this._ids.push(id);
     this._logger.log(`Registed ${this.name}:${id}:${key}`);
   }
 
@@ -135,6 +140,7 @@ export class KeyBinding {
       return;
     }
     this._keybindings.delete(id);
+    this._ids.splice(this._ids.indexOf(id), 1);
     if (this._stackMap.has(id)) {
       this._resume(id);
     }

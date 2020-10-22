@@ -15,6 +15,7 @@ export declare class KeyBinding {
     private static _debug;
     private static _logger;
     private _keybindings;
+    private _ids;
     private _stackMap;
     /**
      * Handler used to handle keyboard event
@@ -29,7 +30,7 @@ export declare class KeyBinding {
      */
     constructor(name: string, debug?: boolean);
     private _handler;
-    private _override;
+    private _halt;
     private _resume;
     /**
      * Register a keybinding
