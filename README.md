@@ -18,14 +18,15 @@ yarn add @winwin/keybinding.js
 
 ```js
 import { KeyBinding } from "@winwin/keybinding.js";
+import { KeyCode, KeyMod } from "@winwin/keybinding.js/dist/lib/keyCodes";
 const kbd = new KeyBinding();
 
 // mount kbd to an HTMLElemnet
 kbd.mount(document.body);
 
 // register keybind
-kbd.register("mykeybindingname", "KeyS", (e) => {
-  // e.code = "KeyS"
+kbd.register("mykeybindingname", KeyCode.KEY_S, (e) => {
+  // will fire when press 's'
   console.log("keydown event with params:", e);
 });
 
@@ -146,8 +147,8 @@ mount(element: HTMLElement | null | undefined): void;
 ### register
 
 ```ts
-register(element: HTMLElement | null | undefined, id: string, key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
-register(id: string, key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
+register(element: HTMLElement | null | undefined, id: string, key: number | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
+register(id: string, key: number | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
 ```
 
 - Describe: register keybinding
