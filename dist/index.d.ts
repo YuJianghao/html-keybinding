@@ -14,6 +14,7 @@ export declare class KeyBinding {
     private static _debug;
     private static _logger;
     private _keybindings;
+    private _stackMap;
     /**
      * Handler used to handle keyboard event
      */

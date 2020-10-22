@@ -1,4 +1,5 @@
 import { StandardKeyboardEvent } from "./lib/keyboardEvent";
+import Stack from "./lib/stack";
 
 class Logger {
   constructor(private _debug = false) {}
@@ -36,6 +37,7 @@ export class KeyBinding {
   private static _debug = false;
   private static _logger = new Logger(KeyBinding._debug);
   private _keybindings: Map<string, IKeyBindingItem> = new Map();
+  private _stackMap: Map<string, Stack<IKeyBindingItem>> = new Map();
   /**
    * Handler used to handle keyboard event
    */
@@ -95,7 +97,10 @@ export class KeyBinding {
       return;
     }
     if (this._keybindings.has(id)) {
-      this._logger.warn(`Override ${this.name}:${id} with V-KeyCode=${key}`);
+      this._logger.log(`Override ${this.name}:${id} with V-KeyCode=${key}`);
+      if (!this._stackMap.has(id))
+        this._stackMap.set(id, new Stack<IKeyBindingItem>());
+      this._stackMap.get(id).push(this._keybindings.get(id));
     }
     this._keybindings.set(id, { key, exec });
     this._logger.log(`Registed ${this.name}:${id} with V-KeyCode=${key}`);
@@ -113,6 +118,13 @@ export class KeyBinding {
       return;
     }
     this._keybindings.delete(id);
+    if (this._stackMap.has(id)) {
+      const stack = this._stackMap.get(id);
+      const kbi = stack.pop();
+      this._keybindings.set(id, kbi);
+      this._logger.log(`Resumed ${this.name}:${id} with V-KeyCode=${kbi.key}`);
+      if (stack.isEmpty) this._stackMap.delete(id);
+    }
     this._logger.log(`Unregisted ${this.name}:${id}`);
   }
 
