@@ -39,7 +39,7 @@ kbd.dispose();
 KeyBinding.debug()
 
 // Unregister all keybinding and remove all instance from record
-kbd.dispose();
+KeyBinding.dispose();
 ```
 
 ### Step.02 bind keybinding.js to your element
