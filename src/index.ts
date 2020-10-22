@@ -68,6 +68,10 @@ export class KeyBinding {
     this._root = undefined;
   }
 
+  /**
+   * mount kbd to a dom element as default element
+   * @param element default element
+   */
   mount(element: HTMLElement | null | undefined): void {
     if (!element) {
       logger.error(
@@ -78,6 +82,13 @@ export class KeyBinding {
     this._root = element;
   }
 
+  /**
+   * Register a keybinding to element
+   * @param element dom element that should listen to
+   * @param id keybinding id string, uniq
+   * @param key KeyMod and KeyCode
+   * @param exec callback function
+   */
   register(
     element: HTMLElement | null | undefined,
     id: string,
@@ -85,6 +96,12 @@ export class KeyBinding {
     exec: (e: KeyboardEvent) => void
   ): void;
 
+  /**
+   * Register a keybinding to default root element
+   * @param id keybinding id string, uniq
+   * @param key KeyMod and KeyCode
+   * @param exec callback function
+   */
   register(
     id: string,
     key: number | ((e: KeyboardEvent) => boolean),
@@ -145,8 +162,19 @@ mounted(){
     listener?.register(id, { key, exec });
   }
 
+  /**
+   * Register a keybinding from element
+   * @param element dom element that should unregister with
+   * @param id keybinding id string, uniq
+   */
   unregister(element: HTMLElement | null | undefined, id: string): void;
+
+  /**
+   * Unregister a keybinding from default root element
+   * @param id keybinding id string, uniq
+   */
   unregister(id: string): void;
+
   unregister(...args: any): void {
     let element: HTMLElement | null | undefined, id: string;
     if (typeof args[0] === "string") {
@@ -169,6 +197,9 @@ mounted(){
     }
   }
 
+  /**
+   * Unregister all keybindings and remove all event listeners
+   */
   dispose(): void {
     this.listeners.forEach((listener) => listener.dispose());
   }
