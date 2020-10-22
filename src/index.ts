@@ -202,6 +202,7 @@ mounted(){
    */
   dispose(): void {
     this.listeners.forEach((listener) => listener.dispose());
+    this.listeners.clear();
   }
 
   _addListener(element: HTMLElement): KeyBindingListener {
