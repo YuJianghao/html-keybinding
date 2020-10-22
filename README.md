@@ -14,168 +14,60 @@ yarn add @winwin/keybinding.js
 
 ## Usage
 
-### Basic
+### Step.01 config keybinding.js
 
 ```js
 import { KeyBinding } from "@winwin/keybinding.js";
 import { KeyCode, KeyMod } from "@winwin/keybinding.js/dist/lib/keyCodes";
-const kbd = new KeyBinding();
 
-// mount kbd to an HTMLElemnet
-kbd.mount(document.body);
+// Create keybinding instance
+const kbd = new KeyBinding("myinstancename");
 
-// register keybind
+// Register keybind
 kbd.register("mykeybindingname", KeyMod.CtrlCmd | KeyCode.KEY_S, (e) => {
   // will fire when press 'ctrl/cmd + s'
   console.log("keydown event with params:", e);
-});
+}
 
-// unregister keybind
+// Unregister keybind
 kbd.unregister("mykeybindingname");
 
-// dispost all keybindings
+// Unregister all keybinding and remove instance from record.
+kbd.dispose();
+
+// Enable debug mode
+KeyBinding.debug()
+
+// Unregister all keybinding and remove all instance from record
 kbd.dispose();
 ```
 
-### Custom key function and HTMLElement
+### Step.02 bind keybinding.js to your element
+
+#### HTML
 
 ```js
-// fetch HTMLElement
-const element = document.getElementById("myelement");
-// register keybind
-function key(e) {
-  // `callback` will be fired if `key` return true
-  return e.code === "KeyS";
-}
-function callback(e) {
-  console.log("keydown event with params:", e);
-}
-kbd.register(element, "mykeybindingname", key, callback);
+// Add handler to dom
+window.addEventListener('keydown',kbd.handler)
+// Then remove in future
+window.removeEventListener('keydown',kbd.handler)
 ```
 
-### With vue3 and typescript
+#### Vue
 
-> It should work with js, not tested.
-
-You need to implement the vue plugin as follow.
-
-```ts
-// ./utils/vue-keybinding.ts
-import { App } from "vue";
-import { KeyBinding } from "keybinding.js";
-
-declare module "@vue/runtime-core" {
-  export interface ComponentCustomProperties {
-    $kbd: KeyBinding;
-  }
-}
-
-export function createKeyBinding(debug = false) {
-  const instance = new KeyBinding(debug);
-  function install(app: App) {
-    Object.defineProperty(app.config.globalProperties, "$kbd", {
-      get: () => instance,
-    });
-
-    const unmountApp = app.unmount;
-    app.unmount = function(...args: any) {
-      instance.dispose();
-      unmountApp.call(this, args);
-    };
-  }
-  return {
-    instance,
-    install,
-  };
-}
+```vue
+<template>
+  <!-- Add to keydown event -->
+  <!-- Remember to set `tabindex` so that div can div can emit keydown event -->
+  <div @keydown="kbd.handler" tabindex="0">
+  </div>
+</template>
+<script>
+// Remember to dispose in future. e.g. beforeUnmount or beforeDestroy
+// kbd.dispose()
+</script>
 ```
 
-Then use the plugin
+## Note
 
-```ts
-// ./utils/mykeybinding.ts
-import { createKeyBinding } from "./vue-keybinding";
-const obj = createKeyBinding(process.env.NODE_ENV !== "production");
-export const kbd = obj.instance;
-export default obj;
-
-// ./main.ts
-// ...
-import keybinding from "./utils/keybinding";
-// ...
-app.use(keybinding)
-// ...
-
-// ./App.vue
-// ...
-import { kbd } from "./utils/keybinding";
-// ...
-export default defineComponent({
-  // Use composition API
-  setup() {
-    onMounted(async () => {
-      kbd.mount(document.getElementById("app"));
-      // then rigister keybindings any where
-    });
-    onBeforeUnmount(() => {
-      // unrigister all keybindings
-      kbd.dispose()
-    });
-  },
-  // or use option api
-  mounted(){
-    this.$kbd.mount(document.getElementById("app"));
-    // then rigister keybindings any where
-  }
-  beforeUnmout(){
-    // unrigister all keybindings
-    this.$kbd.dispose()
-  }
-});
-```
-
-## Doc
-
-### mount
-
-```ts
-mount(element: HTMLElement | null | undefined): void;
-```
-
-- Describe: mount keybinding.js to a root HTMLElement
-
-### register
-
-```ts
-register(element: HTMLElement | null | undefined, id: string, key: number | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
-register(id: string, key: number | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
-```
-
-- Describe: register keybinding
-- Parameters:
-  - **element** : HTMLElement which emit keydown event, default root HTMLElement when mount
-  - **id** : keybinding id
-  - **key** : Key code or a function, if function return ture, then run exec
-  - **exec** : keybinding callback
-
-### unregister
-
-```ts
-unregister(element: HTMLElement | null | undefined, id: string): void;
-unregister(id: string): void;
-```
-
-- Describe: unregister keybinding
-- Parameters:
-  - **element** : HTMLElement which emit keydown event, default root HTMLElement when mount
-  - **id** : keybinding id
-
-### dispose
-
-unregister all keybinding
-
-```ts
-dispose(): void;
-```
-
-- Describe: unregister all keybinding
+Since `keybinding.js` is pure js/ts without reactive/vue, you can use it any where as long as `kdb.handler` can be called with a `KeybordEvent` passing in.
