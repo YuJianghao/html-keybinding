@@ -14,6 +14,7 @@ module.exports = {
   ],
   rules: {
     "prettier/prettier": "error",
+    "@typescript-eslint/no-namespace": "off",
   },
   ignorePatterns: ["**/*.js", "dist"],
 };
