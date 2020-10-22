@@ -87,6 +87,7 @@ export class KeyBinding {
       this._stackMap.set(id, new Stack<IKeyBindingItem>());
     const kbi = this._keybindings.get(id);
     this._stackMap.get(id).push(kbi);
+    this._keybindings.delete(id);
     this._logger.log(
       `Override ${this.name}:${id}:${kbi.key} with ${this.name}:${keybinding.id}:${keybinding.key}`
     );
