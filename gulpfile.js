@@ -20,4 +20,6 @@ function minify() {
   return src(["dist/**/*.js"]).pipe(uglify()).pipe(dest("dist"));
 }
 
+exports.dev = series(clean, parallel(compile, copy))
+
 exports.default = series(clean, parallel(compile, copy), minify);
