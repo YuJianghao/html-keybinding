@@ -1,1 +1,0 @@
-"use strict";function illegalArgument(e){return e?new Error("Illegal argument: "+e):new Error("Illegal argument")}Object.defineProperty(exports,"__esModule",{value:!0}),exports.illegalArgument=void 0,exports.illegalArgument=illegalArgument;
