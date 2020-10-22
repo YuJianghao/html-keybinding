@@ -25,8 +25,8 @@ const kbd = new KeyBinding();
 kbd.mount(document.body);
 
 // register keybind
-kbd.register("mykeybindingname", KeyCode.KEY_S, (e) => {
-  // will fire when press 's'
+kbd.register("mykeybindingname", KeyMod.CtrlCmd | KeyCode.KEY_S, (e) => {
+  // will fire when press 'ctrl/cmd + s'
   console.log("keydown event with params:", e);
 });
 
