@@ -1,5 +1,5 @@
 export interface IKeyBindingItem {
-    key: string | ((e: KeyboardEvent) => boolean);
+    key: number | ((e: KeyboardEvent) => boolean);
     exec: (e: KeyboardEvent) => void;
 }
 export declare class KeyBindingListener {
@@ -17,8 +17,8 @@ export declare class KeyBinding {
     private _root;
     constructor(debug?: boolean);
     mount(element: HTMLElement | null | undefined): void;
-    register(element: HTMLElement | null | undefined, id: string, key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
-    register(id: string, key: string | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
+    register(element: HTMLElement | null | undefined, id: string, key: number | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
+    register(id: string, key: number | ((e: KeyboardEvent) => boolean), exec: (e: KeyboardEvent) => void): void;
     unregister(element: HTMLElement | null | undefined, id: string): void;
     unregister(id: string): void;
     dispose(): void;

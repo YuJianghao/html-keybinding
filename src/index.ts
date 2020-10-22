@@ -1,3 +1,5 @@
+import { StandardKeyboardEvent } from "./lib/keyboardEvent";
+
 let _debug = false;
 
 const logger = {
@@ -18,7 +20,7 @@ const logger = {
 };
 
 export interface IKeyBindingItem {
-  key: string | ((e: KeyboardEvent) => boolean);
+  key: number | ((e: KeyboardEvent) => boolean);
   exec: (e: KeyboardEvent) => void;
 }
 export class KeyBindingListener {
@@ -28,9 +30,10 @@ export class KeyBindingListener {
     this.map = new Map();
     if (this.elememt.tabIndex < 0) this.elememt.tabIndex = 0;
     this._handler = (e: KeyboardEvent) => {
+      const se = new StandardKeyboardEvent(e);
       this.map.forEach((item, id) => {
         if (typeof item.key === "function" && !item.key(e)) return;
-        else if (e.code !== item.key) return;
+        else if (typeof item.key === "number" && !se.equals(item.key)) return;
         logger.log(id, "called");
         item.exec(e);
       });
@@ -78,20 +81,20 @@ export class KeyBinding {
   register(
     element: HTMLElement | null | undefined,
     id: string,
-    key: string | ((e: KeyboardEvent) => boolean),
+    key: number | ((e: KeyboardEvent) => boolean),
     exec: (e: KeyboardEvent) => void
   ): void;
 
   register(
     id: string,
-    key: string | ((e: KeyboardEvent) => boolean),
+    key: number | ((e: KeyboardEvent) => boolean),
     exec: (e: KeyboardEvent) => void
   ): void;
 
   register(...args: any): void {
     let element: HTMLElement | null | undefined,
       id: string,
-      key: string | ((e: KeyboardEvent) => boolean),
+      key: number | ((e: KeyboardEvent) => boolean),
       exec: (e: KeyboardEvent) => void;
     function warnRoot() {
       logger.error(
