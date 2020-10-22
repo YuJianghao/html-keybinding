@@ -28,6 +28,7 @@ class Logger {
  * @param exec callback
  */
 export interface IKeyBindingItem {
+  id: string;
   key: number;
   exec: (e: KeyboardEvent) => void;
 }
@@ -81,6 +82,24 @@ export class KeyBinding {
     });
   }
 
+  private _override(id: string, keybinding: IKeyBindingItem) {
+    if (!this._stackMap.has(id))
+      this._stackMap.set(id, new Stack<IKeyBindingItem>());
+    const kbi = this._keybindings.get(id);
+    this._stackMap.get(id).push(kbi);
+    this._logger.log(
+      `Override ${this.name}:${id}:${kbi.key} with ${this.name}:${keybinding.id}:${keybinding.key}`
+    );
+  }
+
+  private _resume(id: string) {
+    const stack = this._stackMap.get(id);
+    const kbi = stack.pop();
+    this._keybindings.set(id, kbi);
+    if (stack.isEmpty) this._stackMap.delete(id);
+    this._logger.log(`Resumed ${this.name}:${id}:${kbi.key}`);
+  }
+
   /**
    * Register a keybinding
    * @param id uniq id for keybinding
@@ -97,13 +116,10 @@ export class KeyBinding {
       return;
     }
     if (this._keybindings.has(id)) {
-      this._logger.log(`Override ${this.name}:${id} with V-KeyCode=${key}`);
-      if (!this._stackMap.has(id))
-        this._stackMap.set(id, new Stack<IKeyBindingItem>());
-      this._stackMap.get(id).push(this._keybindings.get(id));
+      this._override(id, { id, key, exec });
     }
-    this._keybindings.set(id, { key, exec });
-    this._logger.log(`Registed ${this.name}:${id} with V-KeyCode=${key}`);
+    this._keybindings.set(id, { id, key, exec });
+    this._logger.log(`Registed ${this.name}:${id}:${key}`);
   }
 
   /**
@@ -119,11 +135,7 @@ export class KeyBinding {
     }
     this._keybindings.delete(id);
     if (this._stackMap.has(id)) {
-      const stack = this._stackMap.get(id);
-      const kbi = stack.pop();
-      this._keybindings.set(id, kbi);
-      this._logger.log(`Resumed ${this.name}:${id} with V-KeyCode=${kbi.key}`);
-      if (stack.isEmpty) this._stackMap.delete(id);
+      this._resume(id);
     }
     this._logger.log(`Unregisted ${this.name}:${id}`);
   }

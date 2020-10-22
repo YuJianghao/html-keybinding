@@ -4,6 +4,7 @@
  * @param exec callback
  */
 export interface IKeyBindingItem {
+    id: string;
     key: number;
     exec: (e: KeyboardEvent) => void;
 }
@@ -28,6 +29,8 @@ export declare class KeyBinding {
      */
     constructor(name: string, debug?: boolean);
     private _handler;
+    private _override;
+    private _resume;
     /**
      * Register a keybinding
      * @param id uniq id for keybinding
