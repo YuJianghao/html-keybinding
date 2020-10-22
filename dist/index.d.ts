@@ -1,11 +1,8 @@
-declare class Logger {
-    private _debug;
-    constructor(_debug?: boolean);
-    log(...args: any): void;
-    warn(...args: any): void;
-    error(...args: any): void;
-    debug(debug?: boolean): void;
-}
+/**
+ * Item used to describe keybindings
+ * @param key KeyMod and KeyCode
+ * @param exec callback
+ */
 export interface IKeyBindingItem {
     key: number;
     exec: (e: KeyboardEvent) => void;
@@ -14,17 +11,45 @@ export declare class KeyBinding {
     name: string;
     debug: boolean;
     static map: Map<string, KeyBinding>;
-    static __debug: boolean;
-    static _logger: Logger;
+    private static _debug;
+    private static _logger;
     private _keybindings;
+    /**
+     * Handler used to handle keyboard event
+     */
     handler: (e: KeyboardEvent) => Promise<void>;
     private _logger;
+    private _disposed;
+    /**
+     * Create a KeyBinding instance
+     * @param name instance uniq name
+     * @param debug true for debug mode
+     */
     constructor(name: string, debug?: boolean);
     private _handler;
+    /**
+     * Register a keybinding
+     * @param id uniq id for keybinding
+     * @param key keys e.g. KeyMod.CtrlCmd | KeyCode.Key_S
+     * @param exec callback
+     */
     register(id: string, key: number, exec: (e: KeyboardEvent) => void): void;
+    /**
+     * Unregister a keybinding
+     * @param id uniq id for keybinding
+     */
     unregister(id: string): void;
+    /**
+     * Unregister all keybinding and remove instance from record.
+     * After dispose, hanlder will not work any more.
+     */
     dispose(): void;
-    static debug(debug?: boolean): void;
+    /**
+     * Enable debug mode
+     */
+    static debug(): void;
+    /**
+     * Unregister all keybinding and remove all instance from record
+     */
     static dispose(): void;
 }
-export {};

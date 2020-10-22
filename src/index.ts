@@ -21,6 +21,11 @@ class Logger {
   }
 }
 
+/**
+ * Item used to describe keybindings
+ * @param key KeyMod and KeyCode
+ * @param exec callback
+ */
 export interface IKeyBindingItem {
   key: number;
   exec: (e: KeyboardEvent) => void;
@@ -28,11 +33,21 @@ export interface IKeyBindingItem {
 
 export class KeyBinding {
   static map: Map<string, KeyBinding> = new Map();
-  static __debug = false;
-  static _logger = new Logger(KeyBinding.__debug);
+  private static _debug = false;
+  private static _logger = new Logger(KeyBinding._debug);
   private _keybindings: Map<string, IKeyBindingItem> = new Map();
+  /**
+   * Handler used to handle keyboard event
+   */
   public handler: (e: KeyboardEvent) => Promise<void>;
-  private _logger: Logger = new Logger(this.debug || KeyBinding.__debug);
+  private _logger: Logger = new Logger(this.debug || KeyBinding._debug);
+  private _disposed = false;
+
+  /**
+   * Create a KeyBinding instance
+   * @param name instance uniq name
+   * @param debug true for debug mode
+   */
   constructor(public name: string, public debug = false) {
     if (!this.name) {
       this._logger.error("name is required!");
@@ -50,6 +65,10 @@ export class KeyBinding {
   }
 
   private async _handler(e: KeyboardEvent): Promise<void> {
+    if (this._disposed) {
+      this._logger.warn(`KeyBinding(${this.name}) has been disposed!`);
+      return;
+    }
     this._logger.log(`Keydown detected at ${this.name}`);
     const se = new StandardKeyboardEvent(e);
     this._keybindings.forEach((keybinding, key) => {
@@ -60,6 +79,12 @@ export class KeyBinding {
     });
   }
 
+  /**
+   * Register a keybinding
+   * @param id uniq id for keybinding
+   * @param key keys e.g. KeyMod.CtrlCmd | KeyCode.Key_S
+   * @param exec callback
+   */
   public register(
     id: string,
     key: number,
@@ -76,6 +101,10 @@ export class KeyBinding {
     this._logger.log(`Registed ${this.name}:${id} with V-KeyCode=${key}`);
   }
 
+  /**
+   * Unregister a keybinding
+   * @param id uniq id for keybinding
+   */
   public unregister(id: string): void {
     if (!this._keybindings.has(id)) {
       this._logger.warn(
@@ -87,17 +116,28 @@ export class KeyBinding {
     this._logger.log(`Unregisted ${this.name}:${id}`);
   }
 
+  /**
+   * Unregister all keybinding and remove instance from record.
+   * After dispose, hanlder will not work any more.
+   */
   public dispose(): void {
     this._keybindings.clear();
     KeyBinding.map.delete(this.name);
+    this._disposed = true;
     this._logger.log(`Dispose KeyBinding: ${this.name}`);
   }
 
-  public static debug(debug = true): void {
-    KeyBinding.__debug = debug;
-    KeyBinding._logger.debug(debug);
+  /**
+   * Enable debug mode
+   */
+  public static debug(): void {
+    KeyBinding._debug = true;
+    KeyBinding._logger.debug(true);
   }
 
+  /**
+   * Unregister all keybinding and remove all instance from record
+   */
   public static dispose(): void {
     KeyBinding.map.forEach((keybinding) => keybinding.dispose());
     KeyBinding.map.clear();
