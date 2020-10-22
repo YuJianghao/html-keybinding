@@ -58,7 +58,7 @@ window.removeEventListener('keydown',kbd.handler)
 ```vue
 <template>
   <!-- Add to keydown event -->
-  <!-- Remember to set `tabindex` so that div can div can emit keydown event -->
+  <!-- Remember to set `tabindex` so that div can emit keydown event -->
   <div @keydown="kbd.handler" tabindex="0">
   </div>
 </template>
