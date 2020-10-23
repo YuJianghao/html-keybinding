@@ -21,18 +21,29 @@ import { KeyBinding, KeyCode, KeyMod } from "@winwin/keybinding.js";
 
 // Create keybinding instance
 const kbd = new KeyBinding("myinstancename");
+// or
+const kbd = KeyBinding.createInstance("myinstancename");
 
 // Register keybind
 kbd.register("mykeybindingname", KeyMod.CtrlCmd | KeyCode.KEY_S, (e) => {
   // will fire when press 'ctrl/cmd + s'
   console.log("keydown event with params:", e);
 }
+// or
+KeyBinding.register('myinstancename', 'mykeybindingname', KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_X, (e) => {
+  // will fire when press 'ctrl/cmd + s'
+  console.log("keydown event with params:", e);
+})
 
 // Unregister keybind
 kbd.unregister("mykeybindingname");
+// or
+KeyBinding.unregister('myinstancename', 'mykeybindingname')
 
 // Unregister all keybinding and remove instance from record.
 kbd.dispose();
+// or
+KeyBinding.getInstance('myinstancename').dispose()
 
 // Enable debug mode
 KeyBinding.debug()

@@ -27,6 +27,7 @@ console.log('Please try [ctrl/cmd + x] or [ctrl/cmd + shift + x] within 10 secon
 window.setTimeout(() => {
   // 4. Unregister keybinding
   kbd1.unregister('binding1')
+  KeyBinding.unregister('kbd2', 'binding2')
 
   console.log('Please try [ctrl/cmd + x] or [ctrl/cmd + shift + x] within 10 seconds')
 
