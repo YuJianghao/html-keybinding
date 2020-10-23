@@ -4,7 +4,7 @@ import Stack from "./lib/stack";
 
 class Logger {
   constructor(private _debug = false) {}
-  log(...args: any) {
+  log(...args: unknown[]) {
     if (!this._debug) return;
     console.log(
       "%c[keybinding:debug]",
@@ -12,10 +12,10 @@ class Logger {
       ...args
     );
   }
-  warn(...args: any) {
+  warn(...args: unknown[]) {
     console.warn("%c[keybinding]", "font-weight: bold;color:#f39c12", ...args);
   }
-  error(...args: any) {
+  error(...args: unknown[]) {
     console.error("%c[keybinding]", "font-weight: bold;color:#c0392b", ...args);
   }
   public debug(debug = true) {
