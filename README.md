@@ -67,6 +67,14 @@ window.removeEventListener('keydown',kbd.handler)
 </script>
 ```
 
+### For browers
+
+```js
+// After reference keybinding.js
+const { KeyBinding, KeyCode, KeyMod } = kbjs // NOTE! name `kbjs` is important
+// Do as above
+```
+
 ## Note
 
 Since `keybinding.js` is pure js/ts without reactive/vue, you can use it any where as long as `kdb.handler` can be called with a `KeybordEvent` passing in.
