@@ -2,7 +2,7 @@ export { KeyMod, KeyCode } from "./lib/keyCodes";
 export declare class KeyBinding {
     name: string;
     debug: boolean;
-    static map: Map<string, KeyBinding>;
+    private static _map;
     private static _debug;
     private static _logger;
     private _keybindings;
@@ -48,4 +48,28 @@ export declare class KeyBinding {
      * Unregister all keybinding and remove all instance from record
      */
     static dispose(): void;
+    /**
+     * Register a keybinding. Will create new instance if not exists.
+     * @param name uniq name for instance
+     * @param id uniq id for keybinding
+     * @param key keys e.g. KeyMod.CtrlCmd | KeyCode.Key_S
+     * @param exec callback
+     */
+    static register(name: string, id: string, key: number, exec: (e: KeyboardEvent) => void): void;
+    /**
+     * Unregister a keybinding
+     * @param name uniq name for instance
+     * @param id uniq id for keybinding
+     */
+    static unregister(name: string, id: string): void;
+    /**
+     * Create new instance with name, the same as `new KeyBinding(name)`
+     * @param name uniq name for instance
+     */
+    static createInstance(name: string): KeyBinding;
+    /**
+     * Get an instance with name
+     * @param name uniq name for instance
+     */
+    static getInstance(name: string): KeyBinding | null;
 }

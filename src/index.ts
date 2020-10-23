@@ -35,7 +35,7 @@ interface IKeyBindingItem {
 }
 
 export class KeyBinding {
-  static map: Map<string, KeyBinding> = new Map();
+  private static _map: Map<string, KeyBinding> = new Map();
   private static _debug = false;
   private static _logger = new Logger(KeyBinding._debug);
   private _keybindings: Map<string, IKeyBindingItem> = new Map();
@@ -56,13 +56,13 @@ export class KeyBinding {
   constructor(public name: string, public debug = false) {
     if (!this.name) {
       this._logger.error("name is required!");
-      return;
+      throw new Error("name is required!");
     }
-    if (KeyBinding.map.has(this.name)) {
-      this._logger.error("Duplicate name:", this.name);
-      return;
+    if (KeyBinding._map.has(this.name)) {
+      this._logger.error(`Duplicate name: ${this.name}`);
+      throw new Error(`Duplicate name: ${this.name}`);
     }
-    KeyBinding.map.set(this.name, this);
+    KeyBinding._map.set(this.name, this);
     this.handler = async (e) => {
       await this._handler(e);
     };
@@ -154,7 +154,7 @@ export class KeyBinding {
    */
   public dispose(): void {
     this._keybindings.clear();
-    KeyBinding.map.delete(this.name);
+    KeyBinding._map.delete(this.name);
     this._disposed = true;
     this._logger.log(`Dispose KeyBinding: ${this.name}`);
   }
@@ -171,7 +171,55 @@ export class KeyBinding {
    * Unregister all keybinding and remove all instance from record
    */
   public static dispose(): void {
-    KeyBinding.map.forEach((keybinding) => keybinding.dispose());
-    KeyBinding.map.clear();
+    KeyBinding._map.forEach((keybinding) => keybinding.dispose());
+    KeyBinding._map.clear();
+  }
+
+  /**
+   * Register a keybinding. Will create new instance if not exists.
+   * @param name uniq name for instance
+   * @param id uniq id for keybinding
+   * @param key keys e.g. KeyMod.CtrlCmd | KeyCode.Key_S
+   * @param exec callback
+   */
+  public static register(
+    name: string,
+    id: string,
+    key: number,
+    exec: (e: KeyboardEvent) => void
+  ): void {
+    const kbd = KeyBinding.getInstance(name) || new KeyBinding(name);
+    kbd.register(id, key, exec);
+  }
+
+  /**
+   * Unregister a keybinding
+   * @param name uniq name for instance
+   * @param id uniq id for keybinding
+   */
+  public static unregister(name: string, id: string): void {
+    const kbd = KeyBinding.getInstance(name);
+    if (!kbd) {
+      KeyBinding._logger.log(`Instance not found: ${name}`);
+      return;
+    }
+    kbd.unregister(id);
+  }
+
+  /**
+   * Create new instance with name, the same as `new KeyBinding(name)`
+   * @param name uniq name for instance
+   */
+  public static createInstance(name: string): KeyBinding {
+    return new KeyBinding(name);
+  }
+
+  /**
+   * Get an instance with name
+   * @param name uniq name for instance
+   */
+  public static getInstance(name: string): KeyBinding | null {
+    if (KeyBinding._map.has(name)) return KeyBinding._map.get(name);
+    else return null;
   }
 }
