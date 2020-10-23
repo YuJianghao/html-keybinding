@@ -17,8 +17,7 @@ yarn add @winwin/keybinding.js
 ### Step.01 config keybinding.js
 
 ```js
-import { KeyBinding } from "@winwin/keybinding.js";
-import { KeyCode, KeyMod } from "@winwin/keybinding.js/dist/lib/keyCodes";
+import { KeyBinding, KeyCode, KeyMod } from "@winwin/keybinding.js";
 
 // Create keybinding instance
 const kbd = new KeyBinding("myinstancename");
