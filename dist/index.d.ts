@@ -1,13 +1,4 @@
-/**
- * Item used to describe keybindings
- * @param key KeyMod and KeyCode
- * @param exec callback
- */
-export interface IKeyBindingItem {
-    id: string;
-    key: number;
-    exec: (e: KeyboardEvent) => void;
-}
+export { KeyMod, KeyCode } from "./lib/keyCodes";
 export declare class KeyBinding {
     name: string;
     debug: boolean;

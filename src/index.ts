@@ -1,4 +1,5 @@
 import { StandardKeyboardEvent } from "./lib/keyboardEvent";
+export { KeyMod, KeyCode } from "./lib/keyCodes";
 import Stack from "./lib/stack";
 
 class Logger {
@@ -27,7 +28,7 @@ class Logger {
  * @param key KeyMod and KeyCode
  * @param exec callback
  */
-export interface IKeyBindingItem {
+interface IKeyBindingItem {
   id: string;
   key: number;
   exec: (e: KeyboardEvent) => void;
