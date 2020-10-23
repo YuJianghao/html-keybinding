@@ -69,6 +69,10 @@ window.removeEventListener('keydown',kbd.handler)
 
 ### For browers
 
+```html
+<script src='https://unpkg.com/@winwin/keybinding.js'></script>
+```
+
 ```js
 // After reference keybinding.js
 const { KeyBinding, KeyCode, KeyMod } = kbjs // NOTE! name `kbjs` is important
