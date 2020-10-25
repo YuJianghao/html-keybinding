@@ -58,9 +58,9 @@ KeyBinding.dispose();
 
 ```js
 // Add handler to dom
-window.addEventListener('keydown',kbd.handler)
+window.addEventListener("keydown", kbd.handler);
 // Then remove in future
-window.removeEventListener('keydown',kbd.handler)
+window.removeEventListener("keydown", kbd.handler);
 ```
 
 #### Vue
@@ -69,8 +69,7 @@ window.removeEventListener('keydown',kbd.handler)
 <template>
   <!-- Add to keydown event -->
   <!-- Remember to set `tabindex` so that div can emit keydown event -->
-  <div @keydown="kbd.handler" tabindex="0">
-  </div>
+  <div @keydown="kbd.handler" tabindex="0"></div>
 </template>
 <script>
 // Remember to dispose in future. e.g. beforeUnmount or beforeDestroy
@@ -81,14 +80,28 @@ window.removeEventListener('keydown',kbd.handler)
 ### For browers
 
 ```html
-<script src='https://unpkg.com/@winwin/keybinding.js'></script>
+<script src="https://unpkg.com/@winwin/keybinding.js"></script>
 ```
 
 ```js
 // After reference keybinding.js
-const { KeyBinding, KeyCode, KeyMod } = kbjs // NOTE! name `kbjs` is important
+const { KeyBinding, KeyCode, KeyMod } = kbjs; // NOTE! name `kbjs` is important
 // Do as above
 ```
+
+## Name and id
+
+All name and id should meet reg pattern: `/^([a-zA-Z][0-9a-zA-Z]*)+(\.[0-9a-zA-Z]+)*$/`.
+
+In human words
+
+- A string should be scopes joined by dot
+- Scope should only contain number and letter a-z and A-Z
+- First scope shouldn't start with number.
+
+example names: `app.window.editor.bar.default`, `app.documentBody`
+
+example ids: `music.next`, `music.volumnUp.1`, `music.volumnUp.2`
 
 ## Note
 
