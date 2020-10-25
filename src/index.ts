@@ -1,6 +1,7 @@
 import { StandardKeyboardEvent } from "./lib/keyboardEvent";
 export { KeyMod, KeyCode } from "./lib/keyCodes";
 import Stack from "./lib/stack";
+const scopeReg = /^([a-zA-Z][0-9a-zA-Z]*)+(\.[0-9a-zA-Z]+)*$/;
 
 class Logger {
   constructor(private _debug = false) {}
@@ -57,6 +58,10 @@ export class KeyBinding {
     if (!this.name) {
       this._logger.error("name is required!");
       throw new Error("name is required!");
+    }
+    if (!scopeReg.test(name)) {
+      this._logger.error(`"${name}" does not match pattern\n`, scopeReg);
+      throw new Error("pattern not match");
     }
     if (KeyBinding._map.has(this.name)) {
       this._logger.error(`Duplicate name: ${this.name}`);
@@ -117,6 +122,10 @@ export class KeyBinding {
     key: number,
     exec: (e: KeyboardEvent) => void
   ): void {
+    if (!scopeReg.test(id)) {
+      this._logger.error(`"${id}" does not match pattern\n`, scopeReg);
+      throw new Error("pattern not match");
+    }
     if (!id) {
       this._logger.error("id is required!");
       return;
