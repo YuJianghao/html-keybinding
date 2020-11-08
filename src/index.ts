@@ -79,7 +79,6 @@ export class KeyBinding {
       this._logger.warn(`KeyBinding(${this.name}) has been disposed!`);
       return;
     }
-    this._logger.log(`Keydown detected at ${this.name}`);
     const se = new StandardKeyboardEvent(e);
     const firedKeys: number[] = [];
     for (const i in this._ids) {
