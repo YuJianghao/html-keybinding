@@ -28,25 +28,29 @@ const kbd = KeyBinding.createInstance("myinstancename");
 kbd.register("mykeybindingname", KeyMod.CtrlCmd | KeyCode.KEY_S, (e) => {
   // will fire when press 'ctrl/cmd + s'
   console.log("keydown event with params:", e);
-}
+});
 // or
-KeyBinding.register('myinstancename', 'mykeybindingname', KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_X, (e) => {
-  // will fire when press 'ctrl/cmd + s'
-  console.log("keydown event with params:", e);
-})
-
+KeyBinding.register(
+  "myinstancename",
+  "mykeybindingname",
+  KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_X,
+  (e) => {
+    // will fire when press 'ctrl/cmd + s'
+    console.log("keydown event with params:", e);
+  }
+);
 // Unregister keybind
 kbd.unregister("mykeybindingname");
 // or
-KeyBinding.unregister('myinstancename', 'mykeybindingname')
+KeyBinding.unregister("myinstancename", "mykeybindingname");
 
 // Unregister all keybinding and remove instance from record.
 kbd.dispose();
 // or
-KeyBinding.getInstance('myinstancename').dispose()
+KeyBinding.getInstance("myinstancename").dispose();
 
 // Enable debug mode
-KeyBinding.debug()
+KeyBinding.debug();
 
 // Unregister all keybinding and remove all instance from record
 KeyBinding.dispose();
@@ -65,15 +69,15 @@ window.removeEventListener("keydown", kbd.handler);
 
 #### Vue
 
-```vue
+```html
 <template>
   <!-- Add to keydown event -->
   <!-- Remember to set `tabindex` so that div can emit keydown event -->
   <div @keydown="kbd.handler" tabindex="0"></div>
 </template>
 <script>
-// Remember to dispose in future. e.g. beforeUnmount or beforeDestroy
-// kbd.dispose()
+  // Remember to dispose in future. e.g. beforeUnmount or beforeDestroy
+  // kbd.dispose()
 </script>
 ```
 
@@ -88,6 +92,29 @@ window.removeEventListener("keydown", kbd.handler);
 const { KeyBinding, KeyCode, KeyMod } = kbjs; // NOTE! name `kbjs` is important
 // Do as above
 ```
+
+## Options
+
+- `prevent`: whether run `e.preventDefault()` before fired
+- `stop`: whether run `e.stopPropagation()` before fired
+
+```js
+kbd.register(
+  "id",
+  (e) => {
+    console.log("event", e, "preventDefault and stopPropagation");
+  },
+  {
+    stop: true,
+    prevent: true,
+  }
+);
+```
+
+## Others
+
+- `KeyBinding.prototype.stop`,`KeyBinding.stop`: add keys to stop list
+- `KeyBinding.prototype.prevent`,`KeyBinding.prevent`: add keys to prevent list
 
 ## Name and id
 
