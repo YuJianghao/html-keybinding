@@ -35,9 +35,15 @@ interface IKeyBindingItem {
   exec: (e: KeyboardEvent) => void;
 }
 
+interface IKeyBindingOptions {
+  stop?: boolean;
+  prevent?: boolean;
+}
+
 export class KeyBinding {
   private static _map: Map<string, KeyBinding> = new Map();
   private static _debug = false;
+  private _logger: Logger = new Logger(this.debug || KeyBinding._debug);
   private static _logger = new Logger(KeyBinding._debug);
   private _keybindings: Map<string, IKeyBindingItem> = new Map();
   private _ids: string[] = [];
@@ -46,8 +52,9 @@ export class KeyBinding {
    * Handler used to handle keyboard event
    */
   public handler: (e: KeyboardEvent) => Promise<void>;
-  private _logger: Logger = new Logger(this.debug || KeyBinding._debug);
   private _disposed = false;
+  private _stop: number[] = [];
+  private _prevent: number[] = [];
 
   /**
    * Create a KeyBinding instance
@@ -80,6 +87,12 @@ export class KeyBinding {
       return;
     }
     const se = new StandardKeyboardEvent(e);
+    this._stop.forEach((key) => {
+      if (se.equals(key)) e.stopPropagation();
+    });
+    this._prevent.forEach((key) => {
+      if (se.equals(key)) e.preventDefault();
+    });
     const firedKeys: number[] = [];
     for (const i in this._ids) {
       const id = this._ids[this._ids.length - 1 - parseInt(i, 10)];
@@ -111,6 +124,31 @@ export class KeyBinding {
   }
 
   /**
+   * Enable debug mode
+   */
+  public static debug(): void {
+    KeyBinding._debug = true;
+    KeyBinding._logger.debug(true);
+  }
+
+  /**
+   * Create new instance with name, the same as `new KeyBinding(name)`
+   * @param name uniq name for instance
+   */
+  public static createInstance(name: string): KeyBinding {
+    return new KeyBinding(name);
+  }
+
+  /**
+   * Get an instance with name
+   * @param name uniq name for instance
+   */
+  public static getInstance(name: string): KeyBinding | null {
+    if (KeyBinding._map.has(name)) return KeyBinding._map.get(name);
+    else return null;
+  }
+
+  /**
    * Register a keybinding
    * @param id uniq id for keybinding
    * @param key keys e.g. KeyMod.CtrlCmd | KeyCode.Key_S
@@ -119,7 +157,8 @@ export class KeyBinding {
   public register(
     id: string,
     key: number,
-    exec: (e: KeyboardEvent) => void
+    exec: (e: KeyboardEvent) => void,
+    options: IKeyBindingOptions = {}
   ): void {
     if (!scopeReg.test(id)) {
       this._logger.error(`"${id}" does not match pattern\n`, scopeReg);
@@ -135,6 +174,26 @@ export class KeyBinding {
     this._keybindings.set(id, { id, key, exec });
     this._ids.push(id);
     this._logger.log(`Registed ${this.name}:${id}:${key}`);
+    const { stop, prevent } = options;
+    if (stop) this.stop(key);
+    if (prevent) this.prevent(key);
+  }
+
+  /**
+   * Register a keybinding. Will create new instance if not exists.
+   * @param name uniq name for instance
+   * @param id uniq id for keybinding
+   * @param key keys e.g. KeyMod.CtrlCmd | KeyCode.Key_S
+   * @param exec callback
+   */
+  public static register(
+    name: string,
+    id: string,
+    key: number,
+    exec: (e: KeyboardEvent) => void
+  ): void {
+    const kbd = KeyBinding.getInstance(name) || new KeyBinding(name);
+    kbd.register(id, key, exec);
   }
 
   /**
@@ -157,50 +216,6 @@ export class KeyBinding {
   }
 
   /**
-   * Unregister all keybinding and remove instance from record.
-   * After dispose, hanlder will not work any more.
-   */
-  public dispose(): void {
-    this._keybindings.clear();
-    KeyBinding._map.delete(this.name);
-    this._disposed = true;
-    this._logger.log(`Dispose KeyBinding: ${this.name}`);
-  }
-
-  /**
-   * Enable debug mode
-   */
-  public static debug(): void {
-    KeyBinding._debug = true;
-    KeyBinding._logger.debug(true);
-  }
-
-  /**
-   * Unregister all keybinding and remove all instance from record
-   */
-  public static dispose(): void {
-    KeyBinding._map.forEach((keybinding) => keybinding.dispose());
-    KeyBinding._map.clear();
-  }
-
-  /**
-   * Register a keybinding. Will create new instance if not exists.
-   * @param name uniq name for instance
-   * @param id uniq id for keybinding
-   * @param key keys e.g. KeyMod.CtrlCmd | KeyCode.Key_S
-   * @param exec callback
-   */
-  public static register(
-    name: string,
-    id: string,
-    key: number,
-    exec: (e: KeyboardEvent) => void
-  ): void {
-    const kbd = KeyBinding.getInstance(name) || new KeyBinding(name);
-    kbd.register(id, key, exec);
-  }
-
-  /**
    * Unregister a keybinding
    * @param name uniq name for instance
    * @param id uniq id for keybinding
@@ -215,19 +230,133 @@ export class KeyBinding {
   }
 
   /**
-   * Create new instance with name, the same as `new KeyBinding(name)`
-   * @param name uniq name for instance
+   * Add key(s) to stoped keys
+   * e.stopPropagation() will run when event fired
+   * @param key key to prevent
    */
-  public static createInstance(name: string): KeyBinding {
-    return new KeyBinding(name);
+  public stop(key: number): void;
+  public stop(keys: number[]): void;
+  public stop(args: any): void {
+    if (!Array.isArray(args)) this.stop([args]);
+    else {
+      this._stop = this._stop
+        .concat(args)
+        .filter((value, index, self) => self.indexOf(value) === index);
+    }
   }
 
   /**
-   * Get an instance with name
+   * Add key(s) to stoped keys
+   * e.stopPropagation() will run when event fired
    * @param name uniq name for instance
+   * @param key key to prevent
    */
-  public static getInstance(name: string): KeyBinding | null {
-    if (KeyBinding._map.has(name)) return KeyBinding._map.get(name);
-    else return null;
+  public static stop(name: string, key: number): void;
+  public static stop(name: string, keys: number[]): void;
+  public static stop(name: string, arg: any): void {
+    const kbd = KeyBinding.getInstance(name) || new KeyBinding(name);
+    kbd.stop(arg);
+  }
+
+  /**
+   * Remove key(s) to stoped keys
+   * e.stopPropagation() will run when event fired
+   * @param key key to prevent
+   */
+  public unstop(key: number): void;
+  public unstop(keys: number[]): void;
+  public unstop(args: any): void {
+    if (!Array.isArray(args)) this.unstop([args]);
+    else {
+      this._stop = this._stop.filter((key) => !args.includes(key));
+    }
+  }
+
+  /**
+   * Remove key(s) to stoped keys
+   * e.stopPropagation() will run when event fired
+   * @param name uniq name for instance
+   * @param key key to prevent
+   */
+  public static unstop(name: string, key: number): void;
+  public static unstop(name: string, keys: number[]): void;
+  public static unstop(name: string, arg: any): void {
+    const kbd = KeyBinding.getInstance(name) || new KeyBinding(name);
+    kbd.unstop(arg);
+  }
+
+  /**
+   * Add key(s) to prevented keys
+   * e.preventDefault() will run when event fired
+   * @param key key to prevent
+   */
+  public prevent(key: number): void;
+  public prevent(keys: number[]): void;
+  public prevent(args: any): void {
+    if (!Array.isArray(args)) this.prevent([args]);
+    else {
+      this._prevent = this._prevent
+        .concat(args)
+        .filter((value, index, self) => self.indexOf(value) === index);
+    }
+  }
+
+  /**
+   * Add key(s) to prevented keys
+   * e.preventDefault() will run when event fired
+   * @param name uniq name for instance
+   * @param key key to prevent
+   */
+  public static prevent(name: string, key: number): void;
+  public static prevent(name: string, keys: number[]): void;
+  public static prevent(name: string, arg: any): void {
+    const kbd = KeyBinding.getInstance(name) || new KeyBinding(name);
+    kbd.prevent(arg);
+  }
+
+  /**
+   * Remove key(s) to prevented keys
+   * e.preventDefault() will run when event fired
+   * @param key key to prevent
+   */
+  public unprevent(key: number): void;
+  public unprevent(keys: number[]): void;
+  public unprevent(args: any): void {
+    if (!Array.isArray(args)) this.unprevent([args]);
+    else {
+      this._stop = this._stop.filter((key) => !args.includes(key));
+    }
+  }
+
+  /**
+   * Remove key(s) to prevented keys
+   * e.preventDefault() will run when event fired
+   * @param name uniq name for instance
+   * @param key key to prevent
+   */
+  public static unprevent(name: string, key: number): void;
+  public static unprevent(name: string, keys: number[]): void;
+  public static unprevent(name: string, arg: any): void {
+    const kbd = KeyBinding.getInstance(name) || new KeyBinding(name);
+    kbd.unprevent(arg);
+  }
+
+  /**
+   * Unregister all keybinding and remove instance from record.
+   * After dispose, hanlder will not work any more.
+   */
+  public dispose(): void {
+    this._keybindings.clear();
+    KeyBinding._map.delete(this.name);
+    this._disposed = true;
+    this._logger.log(`Dispose KeyBinding: ${this.name}`);
+  }
+
+  /**
+   * Unregister all keybinding and remove all instance from record
+   */
+  public static dispose(): void {
+    KeyBinding._map.forEach((keybinding) => keybinding.dispose());
+    KeyBinding._map.clear();
   }
 }
