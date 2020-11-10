@@ -1,5 +1,7 @@
 # keybinding.js
 
+<img src="https://img.shields.io/npm/v/@winwin/keybinding.js">
+
 A simple keybinding system for html
 
 > Notes for early versions:
@@ -120,7 +122,7 @@ kbd.register(
 
 All name and id should meet reg pattern: `/^([a-zA-Z][0-9a-zA-Z]*)+(\.[0-9a-zA-Z]+)*$/`.
 
-In human words
+In human words:
 
 - A string should be scopes joined by dot
 - Scope should only contain number and letter a-z and A-Z
