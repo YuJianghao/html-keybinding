@@ -1,6 +1,6 @@
 {
   "name": "@winwin/keybinding.js",
-  "version": "0.3.1-0",
+  "version": "0.3.1",
   "description": "A simple keybinding system for html",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
